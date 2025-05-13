@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+      <div class="container">
+   <form method="POST">
+    <input type="email" name="email" value="{{ request.form.get('email', '') }}" placeholder="Email" required>
+    <input type="password" name="password" value="{{ request.form.get('password', '') }}" placeholder="Senha" required>
+    <button type="submit">Entrar na conta</button>
+</form>
+</div>
+</body>
+</html>

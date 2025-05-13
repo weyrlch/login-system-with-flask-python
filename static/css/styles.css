@@ -1,0 +1,70 @@
+/* 🔹 Centraliza tudo na tela */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* 🔹 Contêiner do formulário */
+.container {
+    width: 350px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative; /* Adiciona controle para centralização */
+}
+
+/* 🔹 Quadrado abaixo do login */
+.quadrado {
+    width: 280px;
+    height: 160px;
+    margin-top: 20px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 🔹 Garante que o formulário fique alinhado ao centro */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 🔹 Estiliza inputs e botão */
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+.alert {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.alert-error {
+    background-color: #F44336;
+    color: white;
+}
+
