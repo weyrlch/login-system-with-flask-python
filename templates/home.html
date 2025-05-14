@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+</head>
+  <!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        {% if user %}
+            <h2>Bem-vindo, {{ user }}!</h2>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        {% else %}
+            <h2>Você não está logado!</h2>
+            <a href="{{ url_for('login') }}">Faça login</a>
+        {% endif %}
+    </div>
+
+</body>
+</html>

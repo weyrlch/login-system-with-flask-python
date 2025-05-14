@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, flash, url_for
+from flask import Flask, request, render_template, flash, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -47,41 +47,42 @@ def register():
         email = request.form.get('email', "")
         password = request.form.get('password', "")
 
-        def validar_senha(username, senha):
+        def validar_senha(un, senha):
             if len(senha) < 8:
                 return "Erro: A senha deve ter pelo menos 8 caracteres."
             if not re.search(r"[A-Z]", senha):
                 return "Erro: A senha deve conter pelo menos uma letra maiúscula."
             if not re.search(r"\d", senha):
-                return "Erro: A senha deve conter pelo menos um número"
+                return "Erro: A senha deve conter pelo menos um número."
             if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha):
                 return "Erro: A senha deve conter pelo menos um símbolo especial."
-            if username.lower() in senha.lower():
+            if un.lower() in senha.lower():
                 return "Erro: A senha não pode conter o nome de usuário."
-            return "Senha válida"
+            return "Senha válida"  # 🔹 Padronizado sem exclamação!
 
-        def validar_email(email):
-            if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
-                return "Erro: Email inválido"
-            return "Email Valido!"
-
+        def validar_email(mail):
+            if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", mail):
+                return "Erro: Email inválido."
+            return "Email válido"  # 🔹 Padronizado sem exclamação!
 
         erro_senha = validar_senha(username, password)
         erro_email = validar_email(email)
 
-        if erro_senha != "Senha válida!":
-            flash(erro_senha, "error")
-        if erro_email != "Email válido!":
-            flash(erro_email, "error")
+        if erro_senha != "Senha válida":
+            flash(erro_senha, "error")  # 🔹 Continua sendo erro
 
-        if erro_senha != "Senha válida!" or erro_email != "Email válido!":
+        if erro_email != "Email válido":
+            flash(erro_email, "error")  # 🔹 Continua sendo erro
+
+        # 🔹 Apenas exibe mensagens de validação quando houver erro, senão continua normalmente
+        if erro_senha != "Senha válida" or erro_email != "Email válido":
             return render_template("register.html", username=username, email=email)
 
         if not username or not email or not password:
-            flash("Erro: Todos os campos são obrigatórios!", "error")
+            flash("Todos os campos são obrigatórios!", "error")
             return redirect(url_for("register"))
 
-
+        hashed_password = generate_password_hash(password)
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -93,6 +94,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash("Usuário registrado com sucesso!")
+        return redirect(url_for("login"))
     return render_template("register.html")
 
 
@@ -102,20 +104,34 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        # Busca usuário no banco de dados
+        # 🔹 Busca usuário no banco de dados
         user = User.query.filter_by(email=email).first()
 
-        if not user or not user.check_password(password):
+        # 🔹 Verifica se o usuário existe e se a senha está correta
+        if not user or not user.check_password(password):  # Método correto!
             flash("Erro: Email ou senha incorretos!", "error")
             return redirect(url_for("login"))
+
+        session["user"] = email  # 🔹 Salva usuário na sessão
         flash("Login realizado com sucesso!", "success")
+        return redirect(url_for("home"))
+
     return render_template("login.html")
 
 
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    flash("Você saiu da conta.", "sucess")
+    return redirect(url_for("login"))
+
 @app.route("/")
 def home():
-    return "API is running!"
-
+    if "user" in session:
+        return render_template("home.html", user=session["user"])
+    else:
+        flash("Acesso negado! Faça login primeiro.", "error")
+        return redirect(url_for("login"))
 
 if __name__ == '__main__':
     app.run(debug=True)
